@@ -1,42 +1,22 @@
 "use strict";
-require("dotenv").config();
 const express = require("express");
-const cors = require("cors");
-const axios = require("axios");
 const app = express();
-app.use(cors());
-const PORT = process.env.PORT;
-app.use(express.json());
-
-// const mongoose = require("mongoose");
-// mongoose.connect(process.env.MONGO_URL, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// });
-// const reviews = new mongoose.Schema({
-//   namereview: String,
-//   review: String,
-// });
-// const itemSchema = new mongoose.Schema({
-//   name: String,
-//   age: String,
-//   reviews: [reviews],
-// });
-
-// const Item = mongoose.model("Items", itemSchema);
-
-// //  ////// ///      //  routs
-
-// app.post("/post", postHandler);
-
-/// ///// handlers////////////
-
-//  /  ///
-
+const notFoundHandler = require("./error-handlers/404.js");
+const errorHandler = require("./error-handlers/500.js");
 app.get("/", (req, res) => {
-  res.send("home");
+  res.send("Hello World");
 });
 
-app.listen(PORT, () => {
-  console.log(`listening on port ${PORT}`);
+app.get("/bad", (req, res) => {
+  throw new Error("something went wrong");
 });
+function start(port) {
+  app.listen(port, () => console.log(`Server is up on ${port}`));
+}
+// always should be after all the routes
+app.use("*", notFoundHandler);
+app.use(errorHandler);
+module.exports = {
+  app: app,
+  start: start,
+};
